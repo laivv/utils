@@ -3,7 +3,7 @@
  * @Author: Lingluo
  * @Date: 2018-11-27 11:22:21
  * @Last Modified by: Lingluo
- * @Last Modified time: 2018-11-27 15:32:33
+ * @Last Modified time: 2018-11-27 15:41:59
  */
 /**
  * 判断类型
@@ -234,6 +234,8 @@ class DateTime {
 				min: number = ret[13] ? Number(ret[13]) : 0,
 				sec: number = ret[16] ? Number(ret[16]) : 0;
 			return new Date(year, month, day, hour, min, sec);
+		} else {
+			throw new TypeError('无法解析参数')
 		}
 	}
 	/**
@@ -251,7 +253,7 @@ class DateTime {
 			str = n as string;
 			num = Number(n);
 		} else {
-			throw new TypeError('参数类型错误');
+			throw new TypeError('无法解析参数');
 		}
 		num = str.length === 10 ? num * 1000 : num;
 		return new Date(num);
