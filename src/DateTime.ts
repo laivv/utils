@@ -3,7 +3,7 @@
  * @Author: Lingluo
  * @Date: 2018-11-27 11:22:21
  * @Last Modified by: Lingluo
- * @Last Modified time: 2018-11-27 15:41:59
+ * @Last Modified time: 2018-11-27 18:10:30
  */
 /**
  * 判断类型
@@ -222,7 +222,7 @@ class DateTime {
 	 */
 	static parseString(a: string): Date {
 		const RE_NUM: RegExp = /\d{10,13}/;
-		const RE_DATE: RegExp = /(\d{4})([-\/年]((\d{1,2})([-\/月]((\d{1,2})([t\s+日]((\d{1,2})([-\/:时]((\d{1,2})([-\/:分]((\d{1,2})秒?)?)?)?)?)?)?)?)?)?)?/;
+		const RE_DATE: RegExp = /(\d{4})([-\/年]((\d{1,2})([-\/月]((\d{1,2})([tT\s+日]((\d{1,2})([-\/:时]((\d{1,2})([-\/:分]((\d{1,2})秒?)?)?)?)?)?)?)?)?)?)?/;
 		let ret: string[] = a.match(RE_NUM);
 		if (ret) {
 			return DateTime.parseNumber(ret[0]);
@@ -267,3 +267,13 @@ class DateTime {
 		return new DateTime(a);
 	}
 }
+
+declare global {
+	interface Window {
+		DateTime: any
+	}
+}
+if(typeof window === 'object'){
+	window.DateTime = DateTime;
+}
+export default DateTime;
