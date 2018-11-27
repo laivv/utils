@@ -17,7 +17,7 @@
 *		minLen:[4,"长度最小四位"],
 *		maxLen:[6,"长度最大6位"],
 *		regExp:[/\d{11}/,'格式错误'],
-*      func:[function(field,fields){return true},'验证未通过']
+*       func:[function(field,fields){return true},'验证未通过']
 *  } 
 * }
 * 
@@ -105,7 +105,7 @@ const VALIDATORS = {
 	regExp(a: any, regExp: RegExp): boolean {
 		return regExp.test(a);
 	},
-	func(a: any, fn: Function, c: any): boolean {
+	func(a: any, fn: Function, c: any): boolean | Promise<any> {
 		const result = fn(a, c);
 		return result === undefined ? true : result;
 	}
@@ -114,56 +114,87 @@ const VALIDATORS = {
 const RULE_NAMES: string[] = ['require', 'type', 'len', 'minLen', 'maxLen', 'regExp', 'func'];
 const RULE_LEN = RULE_NAMES.length;
 
-declare global{
-	interface Window{
-		valid:any
+declare global {
+	interface Window {
+		valid: any
 	}
 }
 
-export const valid = (rules: IValidateRule, data: { [x: string]: any }): IValidateResult => {
+export const valid = (rules: IValidateRule, data: { [x: string]: any }): Promise<Function> => {
+	return new Promise((resolve, reject) => {
 
-	let ret: IValidateResult = {
-		state: true,
-		msg: '',
-		fields: []
-	};
-
-	for (let key in rules) {
-		if (rules.hasOwnProperty(key)) {
-			let rule: IRules = rules[key];
-			for (let i = 0; i < RULE_LEN; i++) {
-				let ruleName: string = RULE_NAMES[i];
-				if (rule.hasOwnProperty(ruleName)) {
-					let ruleItem: IRule = rule[ruleName];
-					let func: Function = VALIDATORS[ruleName];
-					let ruleVal = ruleItem[0],
-						ruleMsg: string = ruleItem[1];
-					let args = [data[key], ruleVal];
-					if (ruleName === 'func') {
-						args.push(data);
-					}
-					if (ruleName === 'type') {
-						args = [data[key], TYPES[<string>ruleVal]];
-					}
-					let is: boolean = func(...args);
-					if (!is) {
-						ret.state = false;
-						if (!ret.msg) {
-							ret.msg = ruleMsg;
+		let ret: IValidateResult = {
+			state: true,
+			msg: '',
+			fields: []
+		};
+		let promises: Array<Promise<any>> = [];
+		for (let key in rules) {
+			if (rules.hasOwnProperty(key)) {
+				let rule: IRules = rules[key];
+				for (let i = 0; i < RULE_LEN; i++) {
+					let ruleName: string = RULE_NAMES[i];
+					if (rule.hasOwnProperty(ruleName)) {
+						let ruleItem: IRule = rule[ruleName];
+						let func: Function = VALIDATORS[ruleName];
+						let ruleVal = ruleItem[0],
+							ruleMsg: string = ruleItem[1];
+						let args = [data[key], ruleVal];
+						if (ruleName === 'func') {
+							args.push(data);
 						}
+						if (ruleName === 'type') {
+							args = [data[key], TYPES[<string>ruleVal]];
+						}
+
+						let is = func(...args);
 						let field: IValidateResultItem = {
 							field: key,
 							msg: ruleMsg
 						}
-						ret.fields.push(field);
-						break;
-					}
+						if (type(is) === 'promise') {
+							promises.push(is);
+							is.catch(data => {
+								ret.state = false;
+								if (!ret.msg) {
+									ret.msg = ruleMsg;
+								}
+								ret.fields.push(field);
+							})
+						}
+						else if (!is) {
+							ret.state = false;
+							if (!ret.msg) {
+								ret.msg = ruleMsg;
+							}
+							ret.fields.push(field);
+							break;
+						}
 
+					}
 				}
 			}
 		}
-	}
-	return ret;
+		if (promises.length) {
+			Promise.all(promises)
+				.then(() => {
+					if (ret.state) {
+						resolve();
+					} else {
+						reject(ret);
+					}
+				})
+				.catch(() => {
+					reject(ret);
+				})
+		} else {
+			if (ret.state) {
+				resolve();
+			} else {
+				reject(ret);
+			}
+		}
+	})
 }
 
 
