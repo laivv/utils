@@ -1,6 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
-const basePath = path.resolve(__dirname, '../');
+const rootPath = path.resolve(__dirname, '../');
 const glob = require('glob');
 const htmlWebpackPlugin = require('html-webpack-plugin');
 function getEntries() {
@@ -19,10 +19,13 @@ module.exports = {
 	entry: entires,
 	output: {
 		filename: '[name].js',
-		path: path.join(basePath, 'dist'),
+		path: path.join(rootPath, 'dist'),
 	},
 	resolve: {
 		extensions: ['.ts', '.js', '.json'],
+		alias:{
+			'@':rootPath
+		}
 	},
 	module: {
 		rules: [
@@ -45,7 +48,7 @@ module.exports = {
 			title: 'utils',
 			chunks: chunks,
 			filename: 'index.html',
-			template: path.join(basePath, './index.html'),
+			template: path.join(rootPath, './index.html'),
 			inject: 'head',
 			chunksSortMode: 'dependency',
 		}),
