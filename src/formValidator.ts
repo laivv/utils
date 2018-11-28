@@ -3,7 +3,7 @@
  * @Author: Lingluo
  * @Date: 2018-11-27 18:22:48
  * @Last Modified by: Lingluo
- * @Last Modified time: 2018-11-28 15:56:01
+ * @Last Modified time: 2018-11-28 16:19:48
  */
 
 /**
@@ -134,7 +134,7 @@ const RULE_LEN = RULE_NAMES.length;
 
 declare global {
 	interface Window {
-		valid: any;
+		validate: any;
 	}
 }
 /**
@@ -143,7 +143,7 @@ declare global {
  * @param  {{[x:string]:any}} data 验证的表单options
  * @returns Promise
  */
-export const valid = (rules: IValidateRule, data: { [x: string]: any }): Promise<Function> => {
+export default function validate(rules: IValidateRule, data: { [x: string]: any }): Promise<Function> {
 	return new Promise((resolve, reject) => {
 		let ret: IValidateResult = {
 			state: true,
@@ -219,6 +219,6 @@ export const valid = (rules: IValidateRule, data: { [x: string]: any }): Promise
 			}
 		}
 	});
-};
+}
 
-window.valid = valid;
+window.validate = validate;

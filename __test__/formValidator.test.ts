@@ -1,4 +1,4 @@
-import { valid } from '../src/validate';
+import validate from '../src/formValidator';
 
 const rules = {
 	name: {
@@ -46,7 +46,7 @@ const formData = {
 
 test('验证字段', async function() {
 	try {
-		let ret = await valid(rules, formData);
+		let ret = await validate(rules, formData);
 		expect(true).toBe(true);
 	} catch (e) {
 		expect(e.state).toBe(false);
