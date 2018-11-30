@@ -176,6 +176,13 @@ class DateTime {
 		return this.parse();
 	}
 	/**
+	 * 返回原生Date对象
+	 * @returns Date
+	 */
+	getDate():Date{
+		return this.date;
+	}
+	/**
 	 * 增加秒数
 	 * @param  {number} n 秒数
 	 * @returns this
