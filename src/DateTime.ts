@@ -3,7 +3,7 @@
  * @Author: Lingluo
  * @Date: 2018-11-27 11:22:21
  * @Last Modified by: Lingluo
- * @Last Modified time: 2018-11-27 18:10:30
+ * @Last Modified time: 2018-12-03 17:38:17
  */
 /**
  * 判断类型
@@ -111,19 +111,12 @@ class DateTime {
 	 * 返回IDateTimeJSON数据
 	 * @returns IDateTimeJSON
 	 */
-	private parse(): IDateTimeJSON {
+	private getJSON(): IDateTimeJSON {
 		const { date } = this;
-		let year = date
-				.getFullYear()
-				.toString()
-				.substr(-2, 2),
-			month = date.getMonth() + 1,
-			day = date.getDate(),
-			week = date.getDay(),
-			hour = date.getHours(),
-			min = date.getMinutes(),
-			sec = date.getSeconds(),
-			fullYear = date.getFullYear(),
+		let { year, month, day, hour, min, sec, week }: any = this.toJSON();
+		year = year.toString().substr(-2, 2);
+		month = month + 1;
+		let fullYear = date.getFullYear(),
 			fullMonth = month < 10 ? `0${month}` : month,
 			fullDay = day < 10 ? `0${day}` : day,
 			fullHour = hour < 10 ? `0${hour}` : hour,
@@ -153,7 +146,7 @@ class DateTime {
 	 * @returns string
 	 */
 	toString(format: string = 'yyyy-mm-dd'): string {
-		const json: IDateTimeJSON = this.parse();
+		const json: IDateTimeJSON = this.getJSON();
 		for (let i in json) {
 			if (json.hasOwnProperty(i)) {
 				format = format.replace(new RegExp(i, 'g'), json[i]);
@@ -169,18 +162,43 @@ class DateTime {
 		return this.date.getTime();
 	}
 	/**
-	 * 返回JSON形式的DateTime数据
-	 * @returns IDateTimeJSON
+	 * 返回date的json数据
+	 * @returns object
 	 */
-	toJSON(): IDateTimeJSON {
-		return this.parse();
+	toJSON(): { [x: string]: number } {
+		const { date } = this;
+		let year: number = date.getFullYear(),
+			month: number = date.getMonth(),
+			day: number = date.getDate(),
+			hour: number = date.getHours(),
+			min: number = date.getMinutes(),
+			sec: number = date.getSeconds(),
+			mSec: number = date.getMilliseconds(),
+			week: number = date.getDay();
+		return { year, month, day, hour, min, sec, mSec ,week};
 	}
 	/**
 	 * 返回原生Date对象
 	 * @returns Date
 	 */
-	getDate():Date{
+	getDate(): Date {
 		return this.date;
+	}
+	/**
+	 * 获取本月第一天
+	 * @returns DateTime
+	 */
+	getFirstDay(): DateTime {
+		const { year, month, hour, min, sec, mSec } = this.toJSON();
+		return new DateTime(new Date(year, month, 1, hour, min, sec, mSec));
+	}
+	/**
+	 * 获取本月最后一天
+	 * @returns DateTime
+	 */
+	getLastDay(): DateTime {
+		const { year, month, hour, min, sec, mSec } = this.toJSON();
+		return new DateTime(new Date(year, month, DateTime.getMaxDay(year, month), hour, min, sec, mSec));
 	}
 	/**
 	 * 增加秒数
@@ -216,6 +234,51 @@ class DateTime {
 		return this.addHours(n * 24);
 	}
 	/**
+	 * 增加月数
+	 * @param  {number} n 月
+	 * @returns this
+	 */
+	addMonths(n: number): this {
+		let { year, month, day, hour, min, sec, mSec } = this.toJSON(),
+			absN: number = Math.abs(n),
+			addYear: number = absN >= 12 ? Math.floor(absN / 12) : 0,
+			addMonth: number = absN >= 12 ? absN % 12 : absN;
+		addYear = n >= 0 ? addYear : -addYear;
+		addMonth = n >= 0 ? addMonth : -addMonth;
+
+		let nYear: number = year + addYear,
+			nMonth: number = month + addMonth;
+
+		if (nMonth > 11) {
+			nMonth = nMonth - 12;
+			nYear += 1;
+		} else if (nMonth < 0) {
+			nMonth = 12 + nMonth;
+			nYear -= 1;
+		}
+		let maxDay: number = DateTime.getMaxDay(nYear, nMonth),
+			nDay: number = day > maxDay ? maxDay : day;
+		this.date = new Date(nYear, nMonth, nDay, hour, min, sec, mSec);
+		return this;
+	}
+	/**
+	 * 增加年数
+	 * @param  {number} n 年数
+	 * @returns this
+	 */
+	addYears(n: number): this {
+		return this.addMonths(n * 12);
+	}
+	/**
+	 * 获取某月的最大天数
+	 * @param  {number} year 年份
+	 * @param  {number} month 月份
+	 * @returns number
+	 */
+	static getMaxDay(year: number, month: number): number {
+		return new Date(year, month + 1, 0).getDate();
+	}
+	/**
 	 * 获取当前时间
 	 * @returns DateTime
 	 */
@@ -242,7 +305,7 @@ class DateTime {
 				sec: number = ret[16] ? Number(ret[16]) : 0;
 			return new Date(year, month, day, hour, min, sec);
 		} else {
-			throw new TypeError('无法解析参数')
+			throw new TypeError('无法解析参数');
 		}
 	}
 	/**
@@ -277,10 +340,10 @@ class DateTime {
 
 declare global {
 	interface Window {
-		DateTime: any
+		DateTime: any;
 	}
 }
-if(typeof window === 'object'){
+if (typeof window === 'object') {
 	window.DateTime = DateTime;
 }
 export default DateTime;
