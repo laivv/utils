@@ -7,12 +7,12 @@
  */
 /**
  * 判断类型
- * @param  {} object
+ * @param  {} obj
  * @returns string
  */
-const type = (object): string => {
+const type = (obj: any): string => {
 	return Object.prototype.toString
-		.call(object)
+		.call(obj)
 		.replace(/(^\[\w+\s+)|(\]$)/g, '')
 		.toLowerCase();
 };
@@ -78,8 +78,8 @@ interface IDateTimeJSON {
 class DateTime {
 	private date: Date;
 	/**
-	 * Date对象或可解析成Date的字符串或数字
-	 * @param  {string|number|Date|DateTime} date?
+	 * 实例化一个DateTime类
+	 * @param  {string|number|Date|DateTime} date? Date对象或可解析成Date的字符串或数字
 	 */
 	constructor(date?: string | number | Date | DateTime) {
 		if (!(this instanceof DateTime)) {
@@ -155,7 +155,7 @@ class DateTime {
 		return format;
 	}
 	/**
-	 * 返回13位的数字时间戳
+	 * 返回数字时间戳
 	 * @returns number
 	 */
 	toStamp(): number {
@@ -175,17 +175,17 @@ class DateTime {
 			sec: number = date.getSeconds(),
 			mSec: number = date.getMilliseconds(),
 			week: number = date.getDay();
-		return { year, month, day, hour, min, sec, mSec ,week};
+		return { year, month, day, hour, min, sec, mSec, week };
 	}
 	/**
-	 * 返回原生Date对象
+	 * 获取原生Date对象
 	 * @returns Date
 	 */
 	getDate(): Date {
 		return this.date;
 	}
 	/**
-	 * 获取本月第一天
+	 * 获取当月第一天
 	 * @returns DateTime
 	 */
 	getFirstDay(): DateTime {
@@ -193,7 +193,7 @@ class DateTime {
 		return new DateTime(new Date(year, month, 1, hour, min, sec, mSec));
 	}
 	/**
-	 * 获取本月最后一天
+	 * 获取当月最后一天
 	 * @returns DateTime
 	 */
 	getLastDay(): DateTime {
