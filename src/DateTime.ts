@@ -293,7 +293,7 @@ class DateTime {
 	static parseString(a: string): Date {
 		const RE_NUM: RegExp = /\d{10,13}/;
 		const RE_DATE: RegExp = /(\d{4})([-\/年]((\d{1,2})([-\/月]((\d{1,2})([tT\s+日]((\d{1,2})([-\/:时]((\d{1,2})([-\/:分]((\d{1,2})秒?)?)?)?)?)?)?)?)?)?)?/;
-		let ret: string[] = a.match(RE_NUM);
+		let ret: string[] | null = a.match(RE_NUM);
 		if (ret) {
 			return DateTime.parseNumber(ret[0]);
 		} else if ((ret = a.match(RE_DATE))) {
