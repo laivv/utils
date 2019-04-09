@@ -89,33 +89,47 @@ export function evalString(str: string, option: obj) {
   return str
 }
 
-export function deepClone(data: any) {
-  const baseType: Array<string> = ['string', 'number', 'boolean', 'undefined', 'null']
-  const tp: string = type(data)
-  if (baseType.indexOf(tp) > -1) {
-    return data
-  }
-  if (tp === 'symbol') {
-    return new Object(data)
-  }
-  let ret: any
-  if (tp === 'array') {
-    ret = []
-    data.forEach((item: any) => {
-      ret.push(deepClone(item))
-    });
-  } else if (tp === 'object') {
-    ret = {}
-    for (let key in data) {
-      if (data.hasOwnProperty(key)) {
-        ret[key] = deepClone(data[key])
+/**
+ * 深拷贝对象
+ * @param  {any} data
+ * @returns any
+ */
+export function deepClone(data: any): any {
+  const targetStack: Array<any> = []
+  const sourceStack: Array<any> = []
+  const ret: any = clone(data)
+  function clone(data: any) {
+    const mType: string = type(data)
+    let ret: any
+    if (['array', 'object'].indexOf(mType) > -1) {
+      const index: number = sourceStack.indexOf(data)
+      // resolve loop reference
+      if (index > -1) {
+        return targetStack[index]
       }
+      ret = mType === 'array' ? [] : {}
+      targetStack.push(ret)
+      sourceStack.push(data)
     }
-  } else {
-    return data
+
+    if (mType === 'array') {
+      data.forEach((item: any) => {
+        ret.push(clone(item))
+      });
+    } else if (mType === 'object') {
+      for (let key in data) {
+        if (data.hasOwnProperty(key)) {
+          ret[key] = clone(data[key])
+        }
+      }
+    } else {
+      return data
+    }
+    return ret
   }
   return ret
 }
+
 
 declare global {
   interface Window {
