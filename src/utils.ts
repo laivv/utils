@@ -130,6 +130,31 @@ export function deepClone(data: any): any {
   return ret
 }
 
+/**
+ * 获取query
+ * @returns obj
+ */
+export function getQuery(): obj {
+  const ret: obj = {}
+  const query: string = location.href.split('?')[1]
+  if (query) {
+    const querys: Array<String> = query.split('&')
+    querys.forEach((item: string) => {
+      const [key, val] = item.split('=')
+      if (key) {
+        if (ret.hasOwnProperty(key)) {
+          if (type(ret[key] !== 'array')) {
+            ret[key] = [ret[key]]
+          }
+          ret[key].push(val)
+        } else {
+          ret[key] = val
+        }
+      }
+    })
+  }
+  return ret
+}
 
 declare global {
   interface Window {
@@ -142,4 +167,5 @@ if (typeof window === 'object') {
   window.type = type
   window.evalString = evalString
   window.deepClone = deepClone
+  window.getQuery = getQuery
 }
