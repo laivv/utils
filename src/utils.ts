@@ -1,10 +1,9 @@
-
 type obj = {
-  [x: string]: any
-}
+	[x: string]: any;
+};
 
 /**
- * 判断类型
+ * check type 
  * @param  {} obj
  * @returns string
  */
@@ -13,6 +12,42 @@ export function type(obj: any): string {
     .call(obj)
     .replace(/(^\[\w+\s+)|(\]$)/g, '')
     .toLowerCase()
+}
+
+export function isObject(arg: any): boolean {
+  return type(arg) === 'object'
+}
+
+export function isArray(arg: any): boolean {
+  return type(arg) === 'array'
+}
+
+export function isString(arg: any): boolean {
+  return type(arg) === 'string'
+}
+
+export function isFunction(arg: any): boolean {
+  return type(arg) === 'function'
+}
+
+export function isNumber(arg: any): boolean {
+  if (type(arg) === 'number') {
+    return !Number.isNaN(arg) && Number.isFinite(arg)
+  }
+  if (isString(arg)) {
+    return /^-?\d+(\.\d+)?$/.test(arg)
+  }
+  return false
+}
+
+export function isInteger(arg: any): boolean {
+  if (isString(arg)) {
+    return /^-?\d+$/.test(arg)
+  }
+  if (isNumber(arg)) {
+    return Number.isInteger(arg)
+  }
+  return false
 }
 
 /**
@@ -46,7 +81,7 @@ export function isNull(obj: any): boolean {
  * @returns string
  */
 export function serizeQuery(obj: obj, ignoreNull: boolean = false): string {
-  const baseType: Array<string> = ['string', 'number', 'boolean', 'undefined', 'null'];
+  const baseType: Array<string> = ['string', 'number', 'boolean', 'undefined', 'null']
   const ret: Array<string> = []
   for (let key in obj) {
     if (obj.hasOwnProperty(key)) {
@@ -115,7 +150,7 @@ export function deepClone(data: any): any {
     if (mType === 'array') {
       data.forEach((item: any) => {
         ret.push(clone(item))
-      });
+      })
     } else if (mType === 'object') {
       for (let key in data) {
         if (data.hasOwnProperty(key)) {
@@ -157,9 +192,9 @@ export function getQuery(): obj {
 }
 
 declare global {
-  interface Window {
-    [x: string]: any;
-  }
+	interface Window {
+		[x: string]: any;
+	}
 }
 if (typeof window === 'object') {
   window.serizeQuery = serizeQuery
@@ -168,4 +203,10 @@ if (typeof window === 'object') {
   window.evalString = evalString
   window.deepClone = deepClone
   window.getQuery = getQuery
+  window.isObject = isObject
+  window.isArray = isArray
+  window.isString = isString
+  window.isFunction = isFunction
+  window.isNumber = isNumber
+  window.isInteger = isInteger
 }
