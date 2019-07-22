@@ -331,12 +331,4 @@ class DateTime {
 	}
 }
 
-declare global {
-	interface Window {
-		DateTime: any;
-	}
-}
-if (typeof window === 'object') {
-  window.DateTime = DateTime
-}
 export default DateTime

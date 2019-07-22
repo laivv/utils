@@ -203,4 +203,3 @@ export default function validate(rules: IValidateRule, data: { [x: string]: any 
     }
   })
 }
-window.validate = validate
