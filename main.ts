@@ -1,4 +1,6 @@
 import { serizeQuery, isNull, type, evalString, deepClone, getQuery, isObject, isArray, isString, isFunction, isNumber, isInteger } from './src/utils'
+import validate from './src/formValidator'
+import DateTime from './src/dateTime'
 
 declare global {
     interface Window {
@@ -19,4 +21,8 @@ if (typeof window === 'object') {
     window.isFunction = isFunction
     window.isNumber = isNumber
     window.isInteger = isInteger
+    window.DateTime = DateTime
+    window.validate = validate
+
+
 }

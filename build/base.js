@@ -3,20 +3,23 @@ const webpack = require('webpack');
 const rootPath = path.resolve(__dirname, '../');
 const glob = require('glob');
 const htmlWebpackPlugin = require('html-webpack-plugin');
-function getEntries() {
-	var files = glob.sync('../src/*.ts');
-	var entries = {};
-	files.forEach(function(file) {
-		debugger;
-		var name = /.*\/src\/(.+)\.ts$/.exec(file)[1];
-		entries[name] = path.join(__dirname, file);
-	});
-	return entries;
-}
-const entires = getEntries();
-const chunks = Object.keys(entires);
+// function getEntries() {
+// 	var files = glob.sync('../src/*.ts');
+// 	var entries = {};
+// 	files.forEach(function(file) {
+// 		debugger;
+// 		var name = /.*\/src\/(.+)\.ts$/.exec(file)[1];
+// 		entries[name] = path.join(__dirname, file);
+// 	});
+// 	return entries;
+// }
+// const entires = getEntries();
+// const chunks = Object.keys(entires);
 module.exports = {
-	entry: entires,
+	// entry: entires,
+	entry:{
+		main: path.join(__dirname,'../main.ts')
+	},
 	output: {
 		filename: '[name].js',
 		path: path.join(rootPath, 'dist'),
@@ -49,7 +52,7 @@ module.exports = {
 	plugins: [
 		new htmlWebpackPlugin({
 			title: 'utils',
-			chunks: chunks,
+			chunks: ['main'],
 			filename: 'index.html',
 			template: path.join(rootPath, './index.html'),
 			inject: 'head',

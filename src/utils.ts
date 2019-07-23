@@ -4,12 +4,12 @@ type obj = {
 
 /**
  * check type 
- * @param  {} obj
+ * @param  {} arg
  * @returns string
  */
-export function type(obj: any): string {
+export function type(arg: any): string {
   return Object.prototype.toString
-    .call(obj)
+    .call(arg)
     .replace(/(^\[\w+\s+)|(\]$)/g, '')
     .toLowerCase()
 }
@@ -52,23 +52,23 @@ export function isInteger(arg: any): boolean {
 
 /**
  * 判断是否空值
- * @param  {any} obj 要判断的对象
+ * @param  {any} arg 要判断的对象
  * @returns boolean
  */
-export function isNull(obj: any): boolean {
-  if (obj === null || obj === undefined || obj === '' || isNaN(obj)) {
+export function isNull(arg: any): boolean {
+  if (arg === null || arg === undefined || arg === '' || isNaN(arg)) {
     return true
   }
-  if (type(obj) === 'array' && !obj.length) {
+  if (type(arg) === 'array' && !arg.length) {
     return true
   }
-  if (type(obj) === 'object' && !Object.keys(obj).length) {
+  if (type(arg) === 'object' && !Object.keys(arg).length) {
     return true
   }
-  if (type(obj) === 'map' && !(obj as Map<any, any>).size) {
+  if (type(arg) === 'map' && !(arg as Map<any, any>).size) {
     return true
   }
-  if (type(obj) === 'set' && !(obj as Set<any>).size) {
+  if (type(arg) === 'set' && !(arg as Set<any>).size) {
     return true
   }
   return false

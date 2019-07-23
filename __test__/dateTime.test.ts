@@ -1,4 +1,4 @@
-import DateTime from '../src/DateTime';
+import DateTime from '../src/dateTime';
 
 let str = '2015-12-31 16:44:59';
 test(`解析字符串 "${str}" `, () => {
